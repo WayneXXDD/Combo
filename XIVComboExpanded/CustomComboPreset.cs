@@ -1129,6 +1129,10 @@ namespace XIVComboExpandedestPlugin
         [CustomComboInfo("Soulsow Feature", "Spinning Scythe becomes Harvest Moon when Soulsow is active and you have a target. Shadow of Death becomes Soulsow if you have no target and Soulsow isn't active.", RPR.JobID, RPR.SpinningScythe, RPR.NightmareScythe, RPR.ShadowOfDeath)]
         ReaperSoulsowFeature = 3916,
 
+        [OrderedEnum]
+        [CustomComboInfo("Plentiful Harvest → Perfectio Feature", "Replaces Plentiful Harvest with Perfectio when Perfectio is available.", RPR.JobID, RPR.PlentifulHarvest)]
+        ReaperPlentifulHarvestToPerfectioFeature = 3999,       
+
         #endregion
         // ====================================================================================
         #region RED MAGE

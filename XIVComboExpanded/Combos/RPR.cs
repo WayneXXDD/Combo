@@ -34,6 +34,7 @@ namespace XIVComboExpandedestPlugin.Combos
             ArcaneCircle = 24405,
             PlentifulHarvest = 24385,
             Sacrificium = 36969,
+            Perfectio = 36973,
             // Misc
             Soulsow = 24387,
             HarvestMoon = 24388,
@@ -88,9 +89,6 @@ namespace XIVComboExpandedestPlugin.Combos
             if (actionID == RPR.Gibbet || actionID == RPR.Gallows || actionID == RPR.Guillotine)
             {
                 var gauge = GetJobGauge<RPRGauge>();
-
-                if (OriginalHook(RPR.Communio) != RPR.Communio)
-                    return OriginalHook(RPR.Communio);
 
                 if (HasEffect(RPR.Buffs.Enshrouded) && gauge.LemureShroud == 1 && (gauge.VoidShroud == 0 || !IsEnabled(CustomComboPreset.ReaperLemureFeature)) && level >= RPR.Levels.Communio)
                     return RPR.Communio;
@@ -505,6 +503,19 @@ namespace XIVComboExpandedestPlugin.Combos
             return actionID;
         }
     }
+
+    internal class ReaperPlentifulHarvestToPerfectioFeature : CustomCombo
+{
+    protected override CustomComboPreset Preset => CustomComboPreset.ReaperPlentifulHarvestToPerfectioFeature;
+
+    protected override uint Invoke(uint actionID, uint lastComboMove, float comboTime, byte level)
+    {
+        if (actionID == RPR.PlentifulHarvest && CanUseAction(RPR.Perfectio))
+            return RPR.Perfectio;
+
+        return actionID;
+    }
+}
 
     internal class ReaperRegressFeature : CustomCombo
     {
