@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace XIVComboExpandedestPlugin.Attributes
 {
@@ -95,6 +95,7 @@ namespace XIVComboExpandedestPlugin.Attributes
                 40 => "Sage",
                 41 => "Viper",
                 42 => "Pictomancer",
+                43 => "Beastmaster",
                 _ => "Unknown",
             };
         }

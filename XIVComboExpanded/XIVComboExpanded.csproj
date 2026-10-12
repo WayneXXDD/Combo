@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Authors>attick, daemitus, alymphocyte, grammernatzi</Authors>
     <Company>-</Company>
-    <Version>1.5.0.95</Version>
+    <Version>1.5.0.96</Version>
     <Description>This plugin condenses combos and mutually exclusive abilities onto a single button.</Description>
     <Copyright>Copyaaaaaaaaaaaa</Copyright>
     <PackageProjectUrl>https://github.com/grammernatzi/XIVComboPluginExpandedest</PackageProjectUrl>
@@ -30,10 +30,11 @@
   <ItemGroup>
     <Content Include="..\res\icon.png" Link="images\icon.png" CopyToOutputDirectory="PreserveNewest" Visible="false" />
     <Content Include="XIVComboExpandedest.json" />
+    <Content Include="..\licenses\WrathCombo-BSD-3-Clause.txt" Link="licenses\WrathCombo-BSD-3-Clause.txt" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <PropertyGroup>
-    <DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
+    <DalamudLibPath Condition="'$(DalamudLibPath)' == ''">$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
     <AssemblyName>XIVComboExpandedest</AssemblyName>
     <RootNamespace>XIVComboExpandedestPlugin</RootNamespace>
   </PropertyGroup>
@@ -90,5 +91,19 @@
     </ItemGroup>
     <Message Text="Deleting @(DeleteFiles)" Importance="high" />
     <Delete Files="@(DeleteFiles)" />
+  </Target>
+
+  <Target Name="PackageBeastmasterLicense" AfterTargets="DefaultDalamudPackagerRelease" Condition="'$(Configuration)' == 'Release'">
+    <PropertyGroup>
+      <BeastmasterPackageDir>$(IntermediateOutputPath)beastmaster-package\</BeastmasterPackageDir>
+    </PropertyGroup>
+    <MakeDir Directories="$(BeastmasterPackageDir)licenses" />
+    <Copy SourceFiles="$(TargetDir)$(TargetName).dll;$(TargetDir)$(TargetName).json" DestinationFolder="$(BeastmasterPackageDir)" />
+    <Copy SourceFiles="$(ProjectDir)..\licenses\WrathCombo-BSD-3-Clause.txt" DestinationFolder="$(BeastmasterPackageDir)licenses" />
+    <ItemGroup>
+      <BeastmasterPackageImages Include="$(TargetDir)images\**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(BeastmasterPackageImages)" DestinationFiles="@(BeastmasterPackageImages->'$(BeastmasterPackageDir)images\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <ZipDirectory SourceDirectory="$(BeastmasterPackageDir)" DestinationFile="$(TargetDir)$(TargetName)\latest.zip" Overwrite="true" />
   </Target>
 </Project>

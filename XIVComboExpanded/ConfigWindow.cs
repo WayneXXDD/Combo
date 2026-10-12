@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -184,6 +184,9 @@ namespace XIVComboExpandedestPlugin
                             ImGui.Spacing();
                         }
 
+                        if (enabled)
+                            DrawBeastmasterOptions(preset);
+
                         if (preset == CustomComboPreset.DancerDanceComboCompatibility && enabled)
                         {
                             var actions = Service.Configuration.DancerDanceCompatActionIDs.Cast<int>().ToArray();
@@ -266,6 +269,50 @@ namespace XIVComboExpandedestPlugin
             ImGui.PopStyleVar();
 
             ImGui.EndChild();
+        }
+
+        private static void DrawBeastmasterOptions(CustomComboPreset preset)
+        {
+            var config = Service.Configuration;
+            var changed = false;
+            switch (preset)
+            {
+                case CustomComboPreset.BeastmasterSimpleMode:
+                    var cycle = config.BeastmasterCycleBeasts;
+                    changed = ImGui.Checkbox("Cycle beasts with Parting Blow##BST", ref cycle);
+                    if (changed)
+                        config.BeastmasterCycleBeasts = cycle;
+                    break;
+
+                case CustomComboPreset.BeastmasterInstinctualCombo:
+                    var instinctualTP = Math.Clamp(config.BeastmasterInstinctualTP, 100, 250);
+                    changed = ImGui.SliderInt("Minimum player and beast TP##BSTInstinctual", ref instinctualTP, 100, 250);
+                    if (changed)
+                        config.BeastmasterInstinctualTP = instinctualTP;
+                    break;
+
+                case CustomComboPreset.BeastmasterIntentionalCombo:
+                    var intentionalTP = Math.Clamp(config.BeastmasterIntentionalTP, 100, 250);
+                    var finisher = config.BeastmasterInfinitiveCombo;
+                    changed = ImGui.SliderInt("Minimum player and beast TP##BSTIntentional", ref intentionalTP, 100, 250);
+                    changed |= ImGui.Checkbox("Perform Infinitive combo setup##BST", ref finisher);
+                    if (changed)
+                    {
+                        config.BeastmasterIntentionalTP = intentionalTP;
+                        config.BeastmasterInfinitiveCombo = finisher;
+                    }
+                    break;
+
+                case CustomComboPreset.BeastmasterBorrowFeature:
+                    var currentHorn = config.BeastmasterBorrowCurrentHornOnly;
+                    changed = ImGui.Checkbox("Only replace for the horn that borrowed##BST", ref currentHorn);
+                    if (changed)
+                        config.BeastmasterBorrowCurrentHornOnly = currentHorn;
+                    break;
+            }
+
+            if (changed)
+                config.Save();
         }
     }
 }

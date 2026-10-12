@@ -28,6 +28,8 @@ namespace XIVComboExpandedestPlugin
         /// </summary>
         internal static IconReplacer IconReplacer { get; set; } = null!;
 
+        internal static BeastmasterState BeastmasterState { get; set; } = null!;
+
         /// <summary>
         /// Gets or sets the plugin address resolver.
         /// </summary>

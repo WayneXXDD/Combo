@@ -76,6 +76,12 @@ namespace XIVComboExpandedestPlugin
         /// </summary>
         public double LucidCooldownOffset { get; set; } = 0;
 
+        public int BeastmasterInstinctualTP { get; set; } = 100;
+        public int BeastmasterIntentionalTP { get; set; } = 100;
+        public bool BeastmasterInfinitiveCombo { get; set; } = false;
+        public bool BeastmasterCycleBeasts { get; set; } = false;
+        public bool BeastmasterBorrowCurrentHornOnly { get; set; } = false;
+
         /// <summary>
         /// Save the configuration to disk.
         /// </summary>

@@ -75,6 +75,38 @@ namespace XIVComboExpandedestPlugin
 
         #endregion
 
+        #region BEASTMASTER
+
+        [OrderedEnum]
+        [CustomComboInfo("Beastmaster Simple Mode", "Replace Smash Axe with pet summoning, capture, instinctual/intentional combos, Rally setup and cooldowns. You still press the button yourself. Pet cycling is optional.", BST.JobID, BST.SmashAxe)]
+        BeastmasterSimpleMode = 4301,
+
+        [OrderedEnum]
+        [CustomComboInfo("Beastmaster Basic Combo", "Put Axeblade Bite on your hotbar: Smash Axe > Axeblade Bite > Shieldsplitter. Resets when the combo timer expires.", BST.JobID, BST.AxebladeBite)]
+        BeastmasterBasicCombo = 4302,
+
+        [OrderedEnum]
+        [CustomComboInfo("Beastmaster Instinctual Combo", "Replace Avalanche/Mistral/Spinning/Gale Axe with the matching pet combo, prioritizing Rally stacks. Blocks use until both player and beast reach the configured TP, unless already in a combo.", BST.JobID, BST.AvalancheAxe, BST.MistralAxe, BST.SpinningAxe, BST.GaleAxe)]
+        BeastmasterInstinctualCombo = 4303,
+
+        [OrderedEnum]
+        [CustomComboInfo("Beastmaster Intentional Combo", "Replace Trick with clockwise/counterclockwise axe combos, prioritizing Rally stacks. Optional Infinitive setup uses Rally and Rallying Cheer. Both player and beast must meet the configured TP to start.", BST.JobID, BST.Trick)]
+        BeastmasterIntentionalCombo = 4304,
+
+        [OrderedEnum]
+        [CustomComboInfo("Beastmaster Capture Helper", "Make Capture unavailable unless the selected target is a capturable beast you have not unlocked.", BST.JobID, BST.Capture)]
+        BeastmasterCaptureHelper = 4305,
+
+        [OrderedEnum]
+        [CustomComboInfo("Beastmaster Battlehorn Lockout", "Make the three Battlehorns unavailable while a battlehorn is already active in combat.", BST.JobID, BST.FirstBattlehorn, BST.SecondBattlehorn, BST.ThirdBattlehorn)]
+        BeastmasterBattlehornLockout = 4306,
+
+        [OrderedEnum]
+        [CustomComboInfo("Beastmaster Borrow Feature", "Replace Borrow with the borrowed Beast Mode action. Optionally restore Borrow when switching away from the horn that borrowed the action.", BST.JobID, BST.Borrow)]
+        BeastmasterBorrowFeature = 4307,
+
+        #endregion
+
         #region ASTROLOGIAN
 
         // latest enum: 3308

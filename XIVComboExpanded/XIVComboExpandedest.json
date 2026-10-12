@@ -6,7 +6,10 @@
   "RepoUrl": "https://github.com/Grammernatzi/XIVComboPluginExpandedest",
   "IconUrl": "https://raw.githubusercontent.com/grammernatzi/XIVComboPluginExpandedest/master/res/icon.png",
   "ImageUrls": [],
-  "Changelog": "New features unlikely to be added until Evercold releases. Bug fixes will still happen, though.
+  "Changelog": "1.5.0.96:
+    * Added seven Beastmaster combo and helper features adapted from WrathCombo.
+    * Added TP thresholds, optional beast cycling, Infinitive setup, and Borrow horn settings.
+    * Beastmaster features are opt-in under /pcombo > Beastmaster.
     
     1.5.0.91: 
     * Removed Burst Strike/Fated Circle to Bloodfest as you now cannot overcap with Bloodfest.

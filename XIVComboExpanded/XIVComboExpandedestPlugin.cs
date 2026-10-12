@@ -40,6 +40,8 @@ namespace XIVComboExpandedestPlugin
 
             Service.IconReplacer = new IconReplacer();
 
+            Service.BeastmasterState = new BeastmasterState();
+
             if (Service.Configuration.Version == 4)
                 this.UpgradeConfig4();
 
@@ -71,6 +73,7 @@ namespace XIVComboExpandedestPlugin
             Service.Interface.UiBuilder.OpenConfigUi -= this.OnOpenConfigUi;
             Service.Interface.UiBuilder.Draw -= this.windowSystem.Draw;
 
+            Service.BeastmasterState.Dispose();
             Service.IconReplacer.Dispose();
         }
 
