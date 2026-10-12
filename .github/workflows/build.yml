@@ -1,68 +1,99 @@
-name: Build
+name: Build and publish plugin repository
 
-# Put your personal access token in a repository secret named PAT for cross-repository access
-
-on: 
+on:
   workflow_dispatch:
   push:
     branches:
-    - master
+      - master
 
-env:
-  PUBLIC_NAME: XIVComboExpandedest
-  SOLUTION_NAME: XIVComboExpanded
-  INTERNAL_NAME: XIVComboExpandedest
-  RELEASE_DIR: XIVComboExpanded\bin\Release\XIVComboExpandedest
-  PERSONAL_PLUGIN_REPO: grammernatzi/MyDalamudPlugins
-  PR_PLUGIN_REPO: grammernatzi/DalamudPlugins
+permissions:
+  contents: read
+
+concurrency:
+  group: dalamud-plugin-repository
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: windows-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        submodules: recursive
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1.0.2
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '10.0.x'
-    - name: Download Dalamud
-      run: |
-        Invoke-WebRequest -Uri https://goatcorp.github.io/dalamud-distrib/stg/latest.zip -OutFile latest.zip
-        Expand-Archive -Force latest.zip "$env:AppData\XIVLauncher\addon\Hooks\dev\"   
-    - name: Build
-      run: |
-        dotnet run --project tests/Beastmaster.Tests/Beastmaster.Tests.csproj --configuration Release
-        dotnet build XIVComboExpanded/XIVComboExpanded.csproj --configuration Release
-      env: 
-        DOTNET_CLI_TELEMETRY_OPTOUT: true
-    - uses: actions/upload-artifact@v4
-      with:
-        name: PluginRepoZip
-        path: ${{ env.RELEASE_DIR }}
-        if-no-files-found: error
+      - name: Checkout Combo
+        uses: actions/checkout@v4
+        with:
+          path: combo
+          submodules: recursive
+          persist-credentials: false
+      - name: Checkout Oracle
+        uses: actions/checkout@v4
+        with:
+          repository: WayneXXDD/Oracle
+          ref: main
+          path: oracle
+          submodules: recursive
+          persist-credentials: false
+      - name: Install .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Download Dalamud libraries
+        shell: pwsh
+        run: |
+          $archivePath = Join-Path $env:RUNNER_TEMP 'dalamud.zip'
+          $libraryPath = Join-Path $env:RUNNER_TEMP 'dalamud'
+          Invoke-WebRequest -Uri 'https://goatcorp.github.io/dalamud-distrib/stg/latest.zip' -OutFile $archivePath
+          Expand-Archive -LiteralPath $archivePath -DestinationPath $libraryPath -Force
+          $dalamudDll = Get-ChildItem -LiteralPath $libraryPath -Filter Dalamud.dll -File -Recurse | Select-Object -First 1
+          if (-not $dalamudDll) { throw 'Dalamud.dll was not found.' }
+          "DALAMUD_LIB_PATH=$($dalamudDll.Directory.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Test and build Combo
+        shell: pwsh
+        env:
+          DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+        run: |
+          dotnet run --project combo/tests/Beastmaster.Tests/Beastmaster.Tests.csproj -c Release
+          if ($LASTEXITCODE -ne 0) { throw 'Combo tests failed.' }
+          dotnet build combo/XIVComboExpanded/XIVComboExpanded.csproj -c Release "-p:DalamudLibPath=$env:DALAMUD_LIB_PATH/"
+          if ($LASTEXITCODE -ne 0) { throw 'Combo build failed.' }
+      - name: Build Oracle
+        shell: pwsh
+        run: |
+          dotnet build oracle/Oracle/Oracle.csproj -c Release -p:Platform=x64 "-p:DalamudLibPath=$env:DALAMUD_LIB_PATH/"
+          if ($LASTEXITCODE -ne 0) { throw 'Oracle build failed.' }
+      - name: Prepare and validate plugin repository
+        shell: pwsh
+        run: |
+          & ./combo/.github/scripts/New-PluginRepository.ps1 `
+            -ComboDirectory ./combo -OracleDirectory ./oracle `
+            -OutputDirectory "$env:RUNNER_TEMP/plugin-feed" `
+            -Repository '${{ github.repository }}'
+      - name: Upload repository files
+        uses: actions/upload-artifact@v4
+        with:
+          name: DalamudPluginRepository
+          path: ${{ runner.temp }}/plugin-feed/
+          if-no-files-found: error
+          retention-days: 14
 
-  deploy:
+  publish:
     needs: build
-    if: "contains(toJSON(github.event.commits.*.message), '[PUSH]')"
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
+    permissions:
+      contents: write
     steps:
-    - uses: actions/checkout@v4
-      with:
-        repository: ${{ env.PERSONAL_PLUGIN_REPO }}
-        token: ${{ secrets.PAT }}
-    - uses: actions/download-artifact@v4
-      with:
-        name: PluginRepoZip
-        path: plugins/${{ env.INTERNAL_NAME }}
-    - uses: EndBug/add-and-commit@v7
-      with:
-        add: --all
-        author_name: GitHub Action
-        author_email: github-actions[bot]@users.noreply.github.com
-        message: Update ${{ env.INTERNAL_NAME }}
-
+      - name: Checkout source scripts
+        uses: actions/checkout@v4
+        with:
+          ref: master
+      - name: Download repository files
+        uses: actions/download-artifact@v4
+        with:
+          name: DalamudPluginRepository
+          path: ${{ runner.temp }}/plugin-feed/
+      - name: Publish distribution branch
+        shell: pwsh
+        run: |
+          $publisher = Join-Path $env:RUNNER_TEMP 'Publish-PluginRepository.ps1'
+          Copy-Item -LiteralPath .github/scripts/Publish-PluginRepository.ps1 -Destination $publisher
+          & $publisher -SourceCheckout $env:GITHUB_WORKSPACE `
+            -FeedDirectory "$env:RUNNER_TEMP/plugin-feed" `
+            -ExpectedRepository '${{ github.repository }}'
