@@ -2,7 +2,7 @@
 
 Add this URL in /xlsettings > Experimental > Custom Plugin Repositories:
 
-https://raw.githubusercontent.com/WayneXXDD/Combo/plugin-repo/pluginmaster.json
+https://raw.githubusercontent.com/WayneXXDD/DalamudPlugins/main/pluginmaster.json
 
 Then open /xlplugins and install **XIV Combo Expandedest (Wayne)** or **Oracle (Wayne)**.
 
