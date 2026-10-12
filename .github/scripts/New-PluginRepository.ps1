@@ -128,13 +128,13 @@ try {
     }
     Complete-PluginPackage $oracleStage 'Oracle' 'Oracle (Wayne)' 'WayneXXDD/Oracle' 'main'
 
-    Write-JsonFile @($entries.ToArray() | Sort-Object InternalName) (Join-Path $distributionRoot 'pluginmaster.json')
+    Write-JsonFile @($entries.ToArray() | Sort-Object InternalName) (Join-Path $distributionRoot 'build-manifest.json')
     [IO.File]::WriteAllText((Join-Path $distributionRoot 'README.md'), @"
 # Wayne's Dalamud plugin repository
 
 Add this URL in /xlsettings > Experimental > Custom Plugin Repositories:
 
-$rawBase/pluginmaster.json
+https://raw.githubusercontent.com/WayneXXDD/DalamudPlugins/main/pluginmaster.json
 
 Then open /xlplugins and install **XIV Combo Expandedest (Wayne)** or **Oracle (Wayne)**.
 

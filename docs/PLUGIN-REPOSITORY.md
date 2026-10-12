@@ -1,11 +1,11 @@
 # Combo and Oracle plugin repository
 
-The `plugin-repo` branch hosts the combined Dalamud feed and plugin ZIPs.
+The `plugin-repo` branch hosts plugin ZIPs and an internal build manifest. The public Dalamud index is hosted in `WayneXXDD/DalamudPlugins` and synchronized hourly or manually. The old Combo pluginmaster.json URL has been removed.
 
 Add this URL in `/xlsettings` → **Experimental** → **Custom Plugin Repositories**, enable it, and save:
 
 ```text
-https://raw.githubusercontent.com/WayneXXDD/Combo/plugin-repo/pluginmaster.json
+https://raw.githubusercontent.com/WayneXXDD/DalamudPlugins/main/pluginmaster.json
 ```
 
 Then use `/xlplugins` to install **XIV Combo Expandedest (Wayne)** or **Oracle (Wayne)**.

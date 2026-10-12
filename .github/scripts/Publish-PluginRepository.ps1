@@ -14,7 +14,7 @@ $feedRoot = (Resolve-Path -LiteralPath $FeedDirectory).ProviderPath
 if ($feedRoot -eq $checkoutRoot -or $feedRoot.StartsWith($checkoutRoot + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
     throw 'The feed must be staged outside the source checkout.'
 }
-$newEntries = @(Get-Content -LiteralPath (Join-Path $feedRoot 'pluginmaster.json') -Raw | ConvertFrom-Json)
+$newEntries = @(Get-Content -LiteralPath (Join-Path $feedRoot 'build-manifest.json') -Raw | ConvertFrom-Json)
 if ($newEntries.Count -ne 2 -or ((@($newEntries.InternalName | Sort-Object) -join ',') -ne 'Oracle,XIVComboExpandedest')) {
     throw 'Expected Combo and Oracle in the generated feed.'
 }
@@ -38,7 +38,10 @@ if ($remoteBranch) {
 }
 if ((& git -C $checkoutRoot branch --show-current) -ne $DistributionBranch) { throw 'Refusing to write a source branch.' }
 
-$previousFeed = Join-Path $checkoutRoot 'pluginmaster.json'
+$previousFeed = Join-Path $checkoutRoot 'build-manifest.json'
+if (-not (Test-Path -LiteralPath $previousFeed)) {
+    $previousFeed = Join-Path $checkoutRoot 'pluginmaster.json'
+}
 if (Test-Path -LiteralPath $previousFeed) {
     $oldEntries = @(Get-Content -LiteralPath $previousFeed -Raw | ConvertFrom-Json)
     foreach ($entry in $newEntries) {
@@ -48,6 +51,7 @@ if (Test-Path -LiteralPath $previousFeed) {
         }
     }
 }
+Invoke-RepoGit @('rm','-f','--ignore-unmatch','--','pluginmaster.json')
 foreach ($feedItem in (Get-ChildItem -LiteralPath $feedRoot -Force)) {
     Copy-Item -LiteralPath $feedItem.FullName -Destination $checkoutRoot -Recurse -Force
 }

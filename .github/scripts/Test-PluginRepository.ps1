@@ -40,7 +40,7 @@ New-Item -ItemType Directory -Path $fixtureZipDir -Force | Out-Null
 Compress-Archive -Path (Join-Path $comboStage '*') -DestinationPath (Join-Path $fixtureZipDir 'latest.zip') -Force
 $feedOutput = Join-Path $testRoot 'feed'
 & (Join-Path $PSScriptRoot 'New-PluginRepository.ps1') -ComboDirectory $fixtureCombo -OracleDirectory $fixtureOracle -OutputDirectory $feedOutput
-$feedText = Get-Content -LiteralPath (Join-Path $feedOutput 'pluginmaster.json') -Raw
+$feedText = Get-Content -LiteralPath (Join-Path $feedOutput 'build-manifest.json') -Raw
 Assert ($feedText.TrimStart().StartsWith('[')) 'Feed is a JSON array'
 $feed = @($feedText | ConvertFrom-Json)
 Assert ($feed.Count -eq 2) 'Both plugins in feed'
@@ -87,5 +87,5 @@ try {
     & (Join-Path $PSScriptRoot 'New-PluginRepository.ps1') -ComboDirectory $fixtureCombo -OracleDirectory $fixtureOracle -OutputDirectory (Join-Path $testRoot 'incomplete-feed')
 } catch { $blocked = $_.Exception.Message -like '*missing MirageUI.dll*' }
 Assert $blocked 'Missing Oracle dependency blocks publication package'
-Assert (-not (Test-Path -LiteralPath (Join-Path $testRoot 'incomplete-feed/pluginmaster.json'))) 'Incomplete package never exposes a feed'
+Assert (-not (Test-Path -LiteralPath (Join-Path $testRoot 'incomplete-feed/build-manifest.json'))) 'Incomplete package never exposes a feed'
 Write-Output "Plugin repository: $assertions assertions passed."
